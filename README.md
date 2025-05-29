@@ -134,6 +134,7 @@ Profanify currently supports the following languages:
 - Danish
 - Dutch
 - English
+- 
 - Italian
 - Portuguese
 
