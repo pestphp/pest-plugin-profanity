@@ -67,8 +67,11 @@ final class ProfanityAnalyser
                 foreach ($lines as $lineNumber => $line) {
                     $key = $lineNumber.'-'.$word;
                     if (preg_match('/\b'.preg_quote($word, '/').'\b/i', $line) === 1 && ! isset($foundProfanity[$key])) {
-                        $errors[] = new Error($file, $lineNumber + 1, $word);
-                        $foundProfanity[$key] = true;
+                        // Skip reporting profanity if the line contains the ignore annotation
+                        if (! str_contains($line, '@pest-ignore-profanity')) {
+                            $errors[] = new Error($file, $lineNumber + 1, $word);
+                            $foundProfanity[$key] = true;
+                        }
                     }
                 }
             }

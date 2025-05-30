@@ -107,6 +107,22 @@ test('config files return lowercase and unique values', function () {
         ->toBeOrdered();
 });
 
+test('ignore lines', function () {
+    $output = new BufferedOutput;
+    $plugin = new class($output) extends Plugin
+    {
+        public function exit(int $code): never
+        {
+            throw new Exception($code);
+        }
+    };
+
+    expect(fn () => $plugin->handleOriginalArguments(['--profanity']))->toThrow(Exception::class, 1)
+        ->and($output->fetch())->not->toContain(
+            '.. pr12(shitty)'
+        );
+});
+
 test('json output', function () {
     $output = new BufferedOutput;
     $plugin = new class($output) extends Plugin

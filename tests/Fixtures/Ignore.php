@@ -7,8 +7,7 @@ namespace Tests\Fixtures;
 /**
  * @internal
  */
-final class Language
+final class Ignore
 {
-    // møgso
-    // bollocks
+    public const IGNORE = 'shitty'; //@pest-ignore-profanity
 }
