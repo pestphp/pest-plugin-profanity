@@ -9,5 +9,5 @@ namespace Tests\Fixtures;
  */
 final class Ignore
 {
-    public const IGNORE = 'shitty'; //@pest-ignore-profanity
+    public const IGNORE = 'shitty'; // @pest-ignore-profanity
 }
