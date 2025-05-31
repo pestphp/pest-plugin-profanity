@@ -31,3 +31,8 @@ it('passes if file does not contain profanity from any specified languages', fun
     expect('Tests\Fixtures\HasDifferentLanguageProfanity')
         ->toHaveNoProfanity(language: ['en', 'ar']);
 });
+
+it('passes if a class name contains a word that includes a profanity as a substring', function () {
+    expect('Tests\Fixtures\HasNoProfanityInClassBecauseProfanityWasAddedAsSubstring')
+        ->toHaveNoProfanity(language: 'en');
+});
