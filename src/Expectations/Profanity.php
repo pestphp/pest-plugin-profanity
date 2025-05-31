@@ -40,19 +40,43 @@ expect()->extend('toHaveNoProfanity', fn (array $excluding = [], array $includin
             }
         }
 
-        $toleratedWords = include __DIR__.'/../Config/tolerated.php';
-
         $words = array_merge($words, $including);
 
         $words = array_diff($words, $excluding);
 
         $fileContents = (string) file_get_contents($object->path);
 
-        foreach ($toleratedWords as $toleratedWord) {
-            $fileContents = str_replace($toleratedWord, '', strtolower($fileContents));
-        }
+        $foundWords = array_filter($words, function (string $word) use ($fileContents): bool {
+            if (preg_match('/\b'.preg_quote($word, '/').'\b/i', $fileContents)) {
+                return true;
+            }
 
-        $foundWords = array_filter($words, fn ($word): bool => preg_match('/'.preg_quote($word, '/').'/i', $fileContents) === 1);
+            preg_match_all('/[a-zA-Z]\w*/', $fileContents, $matches);
+
+            foreach ($matches[0] as $token) {
+                $snakeParts = explode('_', $token);
+
+                foreach ($snakeParts as $part) {
+                    if (strcasecmp($part, $word) === 0) {
+                        return true;
+                    }
+                }
+
+                $camelParts = preg_split('/(?<!^)(?=[A-Z])/', $token);
+
+                if (! is_array($camelParts)) {
+                    return false;
+                }
+
+                foreach ($camelParts as $subpart) {
+                    if (strcasecmp($subpart, $word) === 0) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        });
 
         return $foundWords === [];
     },
