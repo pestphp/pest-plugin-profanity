@@ -20,8 +20,10 @@ test('output', function () {
             ' pr12(shit), pr14(shit), pr16(shit), pr18(shit)',
             '.. pr12(arse)',
             '.. pr12(fuck)',
-            '.. pr12(møgso), pr13(bollocks)',
             '.. pr12(nobhead)',
+        )
+        ->and($output->fetch())->not->toContain(
+            '.. pr12(møgso)',
         );
 });
 
@@ -41,11 +43,11 @@ test('compact output', function () {
             ' pr12(shit), pr14(shit), pr16(shit), pr18(shit)',
             '.. pr12(arse)',
             '.. pr12(fuck)',
-            '.. pr12(møgso), pr13(bollocks)',
             '.. pr12(nobhead)',
         )
         ->and($output->fetch())->not->toContain(
-            '.. OK'
+            '.. OK',
+            '.. pr12(møgso)'
         );
 });
 
@@ -97,6 +99,22 @@ test('specific language', function () {
         )
         ->and($output->fetch())->not->toContain(
             '.. pr13(bollocks)'
+        );
+});
+
+test('multiple languages', function () {
+    $output = new BufferedOutput;
+    $plugin = new class($output) extends Plugin
+    {
+        public function exit(int $code): never
+        {
+            throw new Exception($code);
+        }
+    };
+
+    expect(fn () => $plugin->handleOriginalArguments(['--profanity', '--language=en,da']))->toThrow(Exception::class, 1)
+        ->and($output->fetch())->toContain(
+            'pr12(møgso), pr13(bollocks)'
         );
 });
 
