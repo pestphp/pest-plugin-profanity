@@ -105,7 +105,8 @@ class Plugin implements HandlesOriginalArguments
             }
 
             if (str_starts_with($argument, '--language=')) {
-                $this->language = substr($argument, strlen('--language='));
+                $languageValue = substr($argument, strlen('--language='));
+                $this->language = explode(',', $languageValue);
                 unset($arguments[$key]);
             }
 
