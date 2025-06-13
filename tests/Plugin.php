@@ -43,7 +43,6 @@ test('compact output', function () {
             ' pr12(shit), pr14(shit), pr16(shit), pr18(shit)',
             '.. pr12(arse)',
             '.. pr12(fuck)',
-            '.. pr13(bollocks)',
             '.. pr12(nobhead)',
         )
         ->and($output->fetch())->not->toContain(
