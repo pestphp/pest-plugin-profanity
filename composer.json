@@ -51,5 +51,8 @@
                 "Pest\\Profanity\\Plugin"
             ]
         }
+    },
+    "replace": {
+        "pestphp/pest-plugin-profanity": "*"
     }
 }
