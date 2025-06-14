@@ -4,8 +4,6 @@ on: ['push', 'pull_request']
 
 jobs:
   ci:
-    env:
-      COMPOSER_ROOT_VERSION: dev-4.x
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -17,9 +15,6 @@ jobs:
     name: PHP ${{ matrix.php }} - ${{ matrix.os }} - ${{ matrix.dependency-version }} - ${{ matrix.parallel }}
 
     steps:
-      - name: Set COMPOSER_ROOT_VERSION
-        run: echo "COMPOSER_ROOT_VERSION=dev-${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -36,7 +31,7 @@ jobs:
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Install PHP dependencies
-        run: composer update --${{ matrix.dependency-version }} --no-interaction --no-progress --ansi
+        run: COMPOSER_ROOT_VERSION=dev-4.x composer update --${{ matrix.dependency-version }} --no-interaction --no-progress --ansi
 
       - name: Unit Tests
         run: composer test:unit
