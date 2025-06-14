@@ -4,6 +4,8 @@ on: ['push', 'pull_request']
 
 jobs:
   ci:
+    env:
+      COMPOSER_ROOT_VERSION: dev-4.x
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

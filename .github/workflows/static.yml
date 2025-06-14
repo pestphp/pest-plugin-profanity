@@ -6,6 +6,9 @@ jobs:
   static:
     name: Static Tests
 
+    env:
+      COMPOSER_ROOT_VERSION: dev-4.x
+
     runs-on: ubuntu-latest
     strategy:
       matrix:
