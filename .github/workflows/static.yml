@@ -6,15 +6,16 @@ jobs:
   static:
     name: Static Tests
 
-    env:
-      COMPOSER_ROOT_VERSION: dev-4.x
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
         dependency-version: [prefer-lowest, prefer-stable]
 
     steps:
+
+    - name: Set COMPOSER_ROOT_VERSION
+      run: echo "COMPOSER_ROOT_VERSION=dev-${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+
     - name: Checkout
       uses: actions/checkout@v2
 

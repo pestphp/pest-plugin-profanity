@@ -17,6 +17,9 @@ jobs:
     name: PHP ${{ matrix.php }} - ${{ matrix.os }} - ${{ matrix.dependency-version }} - ${{ matrix.parallel }}
 
     steps:
+      - name: Set COMPOSER_ROOT_VERSION
+        run: echo "COMPOSER_ROOT_VERSION=dev-${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+
       - name: Checkout
         uses: actions/checkout@v2
 
