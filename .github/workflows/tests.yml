@@ -31,7 +31,7 @@ jobs:
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Install PHP dependencies
-        run: composer update --${{ matrix.dependency-version }} --no-interaction --no-progress --ansi
+        run: COMPOSER_ROOT_VERSION=dev-4.x composer update --${{ matrix.dependency-version }} --no-interaction --no-progress --ansi
 
       - name: Unit Tests
         run: composer test:unit
