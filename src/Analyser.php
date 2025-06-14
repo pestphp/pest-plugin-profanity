@@ -18,17 +18,17 @@ final class Analyser
      * @param  \Closure(\Pest\Profanity\Result): void  $callback
      * @param  array<string>  $excludingWords
      * @param  array<string>  $includingWords
-     * @param  string|array<string>|null  $language
+     * @param  array<string>|null  $languages
      */
     public static function analyse(
         array $files,
         Closure $callback,
         array $excludingWords = [],
         array $includingWords = [],
-        $language = null
+        $languages = null
     ): void {
         foreach ($files as $file) {
-            $errors = ProfanityAnalyser::analyse($file, $excludingWords, $includingWords, $language);
+            $errors = ProfanityAnalyser::analyse($file, $excludingWords, $includingWords, $languages);
             $callback(new Result($file, $errors));
         }
     }

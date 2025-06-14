@@ -14,10 +14,10 @@ final class ProfanityAnalyser
      *
      * @param  array<string>  $excludingWords
      * @param  array<string>  $includingWords
-     * @param  string|array<string>|null  $language
+     * @param  array<string>|null  $languages
      * @return array<int, Error>
      */
-    public static function analyse(string $file, array $excludingWords = [], array $includingWords = [], $language = null): array
+    public static function analyse(string $file, array $excludingWords = [], array $includingWords = [], $languages = null): array
     {
         $words = [];
         $profanitiesDir = __DIR__.'/Config/profanities';
@@ -33,9 +33,7 @@ final class ProfanityAnalyser
 
         $profanitiesFiles = array_diff($profanitiesFiles, ['.', '..']);
 
-        if ($language) {
-            $languages = is_array($language) ? $language : [$language];
-
+        if ($languages) {
             foreach ($languages as $lang) {
                 $specificLanguage = "$profanitiesDir/$lang.php";
                 if (file_exists($specificLanguage)) {
@@ -46,12 +44,7 @@ final class ProfanityAnalyser
                 }
             }
         } else {
-            foreach ($profanitiesFiles as $profanitiesFile) {
-                $words = array_merge(
-                    $words,
-                    include "$profanitiesDir/en.php"
-                );
-            }
+            $words = include "$profanitiesDir/en.php";
         }
 
         $words = array_merge($words, $includingWords);
