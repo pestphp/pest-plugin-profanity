@@ -52,7 +52,4 @@
             ]
         }
     },
-    "replace": {
-        "pestphp/pest-plugin-profanity": "*"
-    }
 }
