@@ -23,7 +23,7 @@ jobs:
         coverage: none
 
     - name: Install Dependencies
-      run: COMPOSER_ROOT_VERSION=dev-4.x composer update --prefer-stable --no-interaction --no-progress --ansi
+      run: COMPOSER_ROOT_VERSION=4.x-dev composer update --prefer-stable --no-interaction --no-progress --ansi
 
     - name: Style
       run: composer test:lint
