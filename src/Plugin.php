@@ -59,23 +59,22 @@ class Plugin implements HandlesOriginalArguments
     /**
      * Validates that the specified languages exist in the profanities directory.
      *
-     * @param  string|array<string>|null  $language
+     * @param  array<string>|null  $languages
      * @return array<int, string> List of languages that don't exist
      */
-    private function validateLanguages($language): array
+    private function validateLanguages($languages): array
     {
-        if ($language === null) {
+        if ($languages === null) {
             return [];
         }
 
         $profanitiesDir = __DIR__.'/Config/profanities';
-        $languages = is_string($language) ? [$language] : $language;
         $invalidLanguages = [];
 
-        foreach ($languages as $lang) {
-            $specificLanguage = "$profanitiesDir/$lang.php";
+        foreach ($languages as $language) {
+            $specificLanguage = "$profanitiesDir/$language.php";
             if (! file_exists($specificLanguage)) {
-                $invalidLanguages[] = $lang;
+                $invalidLanguages[] = $language;
             }
         }
 
