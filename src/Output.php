@@ -7,6 +7,9 @@ namespace Pest\Profanity;
 use function Termwind\render;
 use function Termwind\terminal;
 
+/**
+ * @internal
+ */
 class Output
 {
     public static function successMessage(string $message): void
