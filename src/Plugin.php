@@ -116,7 +116,7 @@ class Plugin implements HandlesOriginalArguments
                 $outputPath = explode('=', $argument)[1] ?? null;
 
                 if (empty($outputPath)) {
-                    Output::errorMessage("No output path provided for [--profanity-json].");
+                    Output::errorMessage('No output path provided for [--profanity-json].');
                     $this->exit(1);
                 }
 
@@ -146,7 +146,7 @@ class Plugin implements HandlesOriginalArguments
         $source = ConfigurationSourceDetector::detect();
 
         if ($source === []) {
-            Output::errorMessage("No source section found. Did you forget to add a `source` section to your `phpunit.xml` file?");
+            Output::errorMessage('No source section found. Did you forget to add a `source` section to your `phpunit.xml` file?');
 
             $this->exit(1);
         }
@@ -207,7 +207,7 @@ class Plugin implements HandlesOriginalArguments
         if ($exitCode === 1) {
             Output::errorMessage("Found $totalProfanities instances of profanity in $filesWithProfanityCount files");
         } else {
-            Output::successMessage("No profanity found in your application!");
+            Output::successMessage('No profanity found in your application!');
         }
 
         $this->output->writeln(['']);
