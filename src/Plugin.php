@@ -14,9 +14,7 @@ use Pest\TestSuite;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 
-use function Termwind\render;
 use function Termwind\renderUsing;
-use function Termwind\terminal;
 
 /**
  * @internal
@@ -118,15 +116,7 @@ class Plugin implements HandlesOriginalArguments
                 $outputPath = explode('=', $argument)[1] ?? null;
 
                 if (empty($outputPath)) {
-                    render(<<<'HTML'
-                        <div class="my-1">
-                            <span class="ml-2 px-1 bg-red font-bold">ERROR</span>
-                            <span class="ml-1">
-                                No output path provided for [--profanity-json].
-                            </span>
-                        </div>
-                    HTML);
-
+                    Output::errorMessage("No output path provided for [--profanity-json].");
                     $this->exit(1);
                 }
 
@@ -137,14 +127,7 @@ class Plugin implements HandlesOriginalArguments
         $invalidLanguages = $this->validateLanguages($this->language);
         if (! empty($invalidLanguages)) {
             $invalidLangsStr = implode(', ', $invalidLanguages);
-            render(<<<HTML
-                <div class="my-1">
-                    <span class="ml-2 px-1 bg-red font-bold">ERROR</span>
-                    <span class="ml-1">
-                        The specified language does not exist: {$invalidLangsStr}
-                    </span>
-                </div>
-            HTML);
+            Output::errorMessage("The specified language does not exist: $invalidLangsStr");
 
             $this->output->writeln(['']);
             $this->output->writeln('<info>Available languages:</info>');
@@ -163,14 +146,7 @@ class Plugin implements HandlesOriginalArguments
         $source = ConfigurationSourceDetector::detect();
 
         if ($source === []) {
-            render(<<<'HTML'
-                <div class="my-1">
-                    <span class="ml-2 px-1 bg-red font-bold">ERROR</span>
-                    <span class="ml-1">
-                        No source section found. Did you forget to add a `source` section to your `phpunit.xml` file?
-                    </span>
-                </div>
-            HTML);
+            Output::errorMessage("No source section found. Did you forget to add a `source` section to your `phpunit.xml` file?");
 
             $this->exit(1);
         }
@@ -192,18 +168,10 @@ class Plugin implements HandlesOriginalArguments
                 $path = str_replace(TestSuite::getInstance()->rootPath.'/', '', $result->file);
                 $errors = $result->errors;
 
-                $truncateAt = max(1, terminal()->width() - 24);
-
                 if (empty($errors)) {
                     if (! $this->compact) {
                         renderUsing($this->output);
-                        render(<<<HTML
-                        <div class="flex mx-2">
-                            <span class="truncate-{$truncateAt}">{$path}</span>
-                            <span class="flex-1 content-repeat-[.] text-gray mx-1"></span>
-                            <span class="text-green">OK</span>
-                        </div>
-                        HTML);
+                        Output::pass($path);
 
                         $this->profanityLogger->append($path, []);
                     }
@@ -223,13 +191,7 @@ class Plugin implements HandlesOriginalArguments
                     $profanityLines = implode(', ', $profanityLines);
 
                     renderUsing($this->output);
-                    render(<<<HTML
-                    <div class="flex mx-2">
-                        <span class="truncate-{$truncateAt}">{$path}</span>
-                        <span class="flex-1 content-repeat-[.] text-gray mx-1"></span>
-                        <span class="text-red">{$profanityLines}</span>
-                    </div>
-                    HTML);
+                    Output::fail($path, $profanityLines);
                 }
             },
             $this->excludeWords,
@@ -243,23 +205,9 @@ class Plugin implements HandlesOriginalArguments
         $this->profanityLogger->output();
 
         if ($exitCode === 1) {
-            render(<<<HTML
-                <div class="my-1">
-                    <span class="ml-2 px-1 bg-red font-bold">ERROR</span>
-                    <span class="ml-1">
-                        Found {$totalProfanities} instances of profanity in {$filesWithProfanityCount} files
-                    </span>
-                </div>
-            HTML);
+            Output::errorMessage("Found $totalProfanities instances of profanity in $filesWithProfanityCount files");
         } else {
-            render(<<<'HTML'
-                <div class="my-1">
-                    <span class="ml-2 px-1 bg-green font-bold">PASS</span>
-                    <span class="ml-1">
-                        No profanity found in your application!
-                    </span>
-                </div>
-            HTML);
+            Output::successMessage("No profanity found in your application!");
         }
 
         $this->output->writeln(['']);
