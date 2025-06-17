@@ -79,6 +79,7 @@ class Plugin implements HandlesOriginalArguments
             if (str_starts_with($argument, '--language=')) {
                 $languageValue = substr($argument, strlen('--language='));
                 $this->languages = explode(',', $languageValue);
+                $invalidLanguages = Validator::validateLanguages($this->languages);
                 unset($arguments[$key]);
             }
 
@@ -99,7 +100,6 @@ class Plugin implements HandlesOriginalArguments
             }
         }
 
-        $invalidLanguages = Validator::validateLanguages($this->languages);
         if (! empty($invalidLanguages)) {
             $invalidLangsStr = implode(', ', $invalidLanguages);
             Output::errorMessage("The specified language does not exist: $invalidLangsStr");
