@@ -34,9 +34,9 @@ class Plugin implements HandlesOriginalArguments
     private array $includeWords = [];
 
     /**
-     * @var string|array<string>|null
+     * @var array<string>|null
      */
-    private $language = null;
+    private $languages = null;
 
     private bool $compact = false;
 
@@ -52,31 +52,6 @@ class Plugin implements HandlesOriginalArguments
         private readonly OutputInterface $output
     ) {
         $this->profanityLogger = new NullLogger;
-    }
-
-    /**
-     * Validates that the specified languages exist in the profanities directory.
-     *
-     * @param  array<string>|null  $languages
-     * @return array<int, string> List of languages that don't exist
-     */
-    private function validateLanguages($languages): array
-    {
-        if ($languages === null) {
-            return [];
-        }
-
-        $profanitiesDir = __DIR__.'/Config/profanities';
-        $invalidLanguages = [];
-
-        foreach ($languages as $language) {
-            $specificLanguage = "$profanitiesDir/$language.php";
-            if (! file_exists($specificLanguage)) {
-                $invalidLanguages[] = $language;
-            }
-        }
-
-        return $invalidLanguages;
     }
 
     /**
@@ -103,7 +78,7 @@ class Plugin implements HandlesOriginalArguments
 
             if (str_starts_with($argument, '--language=')) {
                 $languageValue = substr($argument, strlen('--language='));
-                $this->language = explode(',', $languageValue);
+                $this->languages = explode(',', $languageValue);
                 unset($arguments[$key]);
             }
 
@@ -124,7 +99,7 @@ class Plugin implements HandlesOriginalArguments
             }
         }
 
-        $invalidLanguages = $this->validateLanguages($this->language);
+        $invalidLanguages = Validator::validateLanguages($this->languages);
         if (! empty($invalidLanguages)) {
             $invalidLangsStr = implode(', ', $invalidLanguages);
             Output::errorMessage("The specified language does not exist: $invalidLangsStr");
@@ -196,7 +171,7 @@ class Plugin implements HandlesOriginalArguments
             },
             $this->excludeWords,
             $this->includeWords,
-            $this->language
+            $this->languages
         );
 
         $filesWithProfanityCount = count($filesWithProfanity);
