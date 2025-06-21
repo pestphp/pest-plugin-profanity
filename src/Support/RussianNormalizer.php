@@ -1,124 +1,66 @@
 <?php
-function normalizeRussianText(string $text): string
+declare(strict_types=1);
+
+namespace JonPurvis\Profanify\Support;
+
+final class RussianNormalizer
 {
-    $text = mb_strtolower($text, 'UTF-8');
-    $text = str_replace('ё', 'е', $text);
+    public static function normalizeRussianText(string $text): string
+    {
+        $text = mb_strtolower(str_replace('ё', 'е', $text), 'UTF-8');
 
-    $latinToCyrillic = [
-        'a' => 'а',
-        'c' => 'с',
-        'e' => 'е',
-        'o' => 'о',
-        'p' => 'р',
-        'x' => 'х',
-        'y' => 'у',
-        'b' => 'б',
-        'm' => 'м',
-        'h' => 'н',
-        'k' => 'к',
-        't' => 'т',
-        'B' => 'В',
-        'D' => 'Д',
-        'H' => 'Н',
-        'K' => 'К',
-        'M' => 'М',
-        'O' => 'О',
-        'P' => 'Р',
-        'C' => 'С',
-        'T' => 'Т',
-        'X' => 'Х',
-        'Y' => 'У'
-    ];
-    $latinToCyrillic += [
-        'b' => 'б', 'd' => 'д', 'f' => 'ф', 'g' => 'г', 'i' => 'и', 'j' => 'ј', 'l' => 'л', 'n' => 'п', 'q' => 'қ', 'v' => 'в', 'w' => 'ш', 'u' => 'u'
-    ];
-    $text = strtr($text, $latinToCyrillic);
+        $text = strtr($text, [
+            '@'=>'а','0'=>'о','1'=>'и','3'=>'з','4'=>'ч','6'=>'б',
+            'a'=>'а','c'=>'с','e'=>'е','o'=>'о','p'=>'р','x'=>'х','y'=>'й','k'=>'к',
+            'b'=>'б','d'=>'д','g'=>'г','h'=>'н','m'=>'м','t'=>'т','v'=>'в','i'=>'и',
+            '|'=>'л','!'=>'и','_'=>'','-'=>'','*'=>'','.'=>'',','=>'',
+        ]);
 
-    $charSubstitutions = [
-        '@' => 'а',
-        '€' => 'е',
-        '£' => 'л',
-        '₽' => 'р',
-        '0' => 'о',
-        '3' => 'з',
-        '4' => 'ч',
-        '6' => 'б',
-        '1' => 'л',
-        '$' => 's',
-        '|' => 'л',
-        '!' => 'і',
-        '?' => '',
-        '*' => '',
-        '.' => '',
-        ',' => '',
-        '-' => '',
-        '_' => '',
-        '+' => '',
-        '=' => '',
-        '/' => '',
-        '\\' => '',
-        '"' => '',
-        '\''=> '',
-        ':' => '',
-        ';' => '',
-        '~' => '',
-        '`' => '',
-        '^' => '',
-    ];
-    $text = strtr($text, $charSubstitutions);
-
-    $text = preg_replace('/[^\\p{L}\\p{N}]+/u', '', $text);
-
-    return $text;
-}
-
-function filterRussianProfanity(string $text, string $path = ''): ?array
-{
-    $profanities = include __DIR__ . '/ru.php';
-    $normalizedText = normalizeRussianText($text);
-
-    $found = [];
-    foreach ($profanities as $badWord) {
-        if ($badWord === '') {
-            continue;
-        }
-        if (mb_strpos($normalizedText, $badWord) !== false) {
-            $found[] = $badWord;
-        }
+        return preg_replace('/[^а-я]+/u', '', $text) ?: '';
     }
-    if (!empty($found)) {
-        $uniqueWords = array_unique($found);
-        $message = "Profanity detected";
-        if ($path !== '') {
-            $message .= " in file '{$path}'";
-        }
-        $message .= ": [" . implode(', ', $uniqueWords) . "]";
 
-        error_log($message);
-        return $uniqueWords;
-    }
-    return null;
-}
+    /**
+     * @return array<int,string>|null
+     */
+    public static function filterRussianProfanity(string $text): ?array
+    {
+        /** @var array<int,string> $profanities */
+        $profanities = include __DIR__ . '/../Config/profanities/ru.php';
 
-function assertNoRussianProfanity(string $filePath)
-{
-    $lines = file($filePath);
-    $badWords = include __DIR__ . '/ru.php';
-    $offenses = [];
+        $normalized = self::normalizeRussianText($text);
+        $found      = [];
 
-    foreach ($lines as $num => $line) {
-        $normalizedLine = normalizeRussianText($line);
-        foreach ($badWords as $bad) {
-            if ($bad !== '' && mb_strpos($normalizedLine, $bad) !== false) {
-                $offenses[] = $num + 1;
-                break;
+        foreach ($profanities as $bad) {
+            if ($bad !== '' && str_contains($normalized, (string) $bad)) {
+                $found[] = $bad;
             }
         }
+
+        return $found !== [] ? $found : null;
     }
 
-    if (!empty($offenses)) {
-        $lineList = implode(', ', $offenses);
-        $message = "Expecting '{$filePath}' to not use profanity.\nat {$filePath}:{$lineList}";
-        throw new \Exception($message);
+    public static function assertNoRussianProfanity(string $filePath): void
+    {
+        $lines = file($filePath, FILE_IGNORE_NEW_LINES) ?: [];
+        /** @var array<int,string> $badWords */
+        $badWords = include __DIR__ . '/../Config/profanities/ru.php';
+
+        $offended = [];
+
+        foreach ($lines as $num => $line) {
+            $norm = self::normalizeRussianText($line);
+            foreach ($badWords as $bad) {
+                if ($bad !== '' && str_contains($norm, (string) $bad)) {
+                    $offended[] = $num + 1;
+                    break;
+                }
+            }
+        }
+
+        if ($offended !== []) {
+            throw new \Exception(
+                sprintf('Profanity in %s, lines: %s', $filePath, implode(', ', $offended))
+            );
+        }
     }
 }
