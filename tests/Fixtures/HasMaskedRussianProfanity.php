@@ -1,8 +1,10 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Tests\Fixtures;
 
 class HasMaskedRussianProfanity
 {
-    /** @var string */
-    public string $masked = 'Ну и п@зда же ты, x*й тебе!';
+    public string $masked = 'Ну и п@зда же ты, x*y!';
 }
