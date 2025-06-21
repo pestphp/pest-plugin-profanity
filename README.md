@@ -138,6 +138,7 @@ Profanify currently supports the following languages:
 - Italian
 - Portuguese
 - Spanish
+- Russian
 
 Each language has its own configuration file. If you'd like to add a language, please create a new configuration file.
 
