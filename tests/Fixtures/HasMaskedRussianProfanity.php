@@ -6,5 +6,5 @@ namespace Tests\Fixtures;
 
 class HasMaskedRussianProfanity
 {
-    public string $masked = 'Ну и п@зда же ты, x*y!';
+    public string $masked = 'Это полная хуyhя!';
 }
