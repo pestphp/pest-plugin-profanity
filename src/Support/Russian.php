@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace JonPurvis\Profanify\Support;
 
-final class RussianNormalizer
+final class Russian
 {
+    public static function is(string $text): bool
+    {
+        return (bool) preg_match('/[А-Яа-яЁё]/u', $text);
+    }
+
     public static function normalize(string $text): string
     {
         $text = mb_strtolower(str_replace('ё', 'е', $text), 'UTF-8');
