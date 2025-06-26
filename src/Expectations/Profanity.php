@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use JonPurvis\Profanify\Expectations\TargetedProfanity;
+use JonPurvis\Profanify\Support\RussianNormalizer;
 use Pest\Arch\Contracts\ArchExpectation;
 use Pest\Arch\Support\FileLineFinder;
 use PHPUnit\Architecture\Elements\ObjectDescription;
@@ -49,6 +50,13 @@ expect()->extend('toHaveNoProfanity', fn (array $excluding = [], array $includin
         $foundWords = array_filter($words, function (string $word) use ($fileContents): bool {
             if (preg_match('/\b'.preg_quote($word, '/').'\b/i', $fileContents)) {
                 return true;
+            }
+
+            // Check if russian
+            if (preg_match('/[А-Яа-яЁё]/u', $word)) {
+                $normalized = RussianNormalizer::normalizeRussianText($fileContents);
+
+                return str_contains($normalized, $word);
             }
 
             preg_match_all('/[a-zA-Z]\w*/', $fileContents, $matches);
