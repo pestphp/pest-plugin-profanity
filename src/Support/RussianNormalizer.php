@@ -6,7 +6,7 @@ namespace JonPurvis\Profanify\Support;
 
 final class RussianNormalizer
 {
-    public static function normalizeRussianText(string $text): string
+    public static function normalize(string $text): string
     {
         $text = mb_strtolower(str_replace('ё', 'е', $text), 'UTF-8');
 
