@@ -56,7 +56,7 @@ expect()->extend('toHaveNoProfanity', fn (array $excluding = [], array $includin
 
             if ($russian->is($word)) {
                 $fileContents = Russian::normalize($fileContents);
-                preg_match_all('/[А-Яа-яЁё]+/u', $fileContents, $matches);
+                preg_match_all(Russian::pattern(), $fileContents, $matches);
             } else {
                 preg_match_all('/[a-zA-Z]\w*/', $fileContents, $matches);
             }

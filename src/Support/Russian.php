@@ -6,6 +6,7 @@ namespace JonPurvis\Profanify\Support;
 
 final class Russian
 {
+    private static string $pattern = '/[А-Яа-яЁё]+/u';
     private bool $detected = false;
 
     /** @var array<string, string> */
@@ -20,7 +21,7 @@ final class Russian
 
     public function is(string $text): bool
     {
-        if ((bool) preg_match('/[А-Яа-яЁё]/u', $text)) {
+        if ((bool) preg_match(self::$pattern, $text)) {
             $this->detected = true;
         }
 
@@ -30,6 +31,11 @@ final class Russian
     public function isDetected(): bool
     {
         return $this->detected;
+    }
+
+    public static function pattern(): string
+    {
+        return self::$pattern;
     }
 
     public static function normalize(string $text): string
