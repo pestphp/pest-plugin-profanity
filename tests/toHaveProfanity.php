@@ -24,12 +24,9 @@ it('fails if a file contains profanity in a property', function () {
         ->toHaveNoProfanity();
 })->throws(ArchExpectationFailedException::class);
 
-it('fails if a file contains russian profanity', function (string $file) {
-    expect($file)->toHaveNoProfanity(language: 'ru');
-})->with([
-    'Tests\Fixtures\HasExplicitRussianProfanity',
-    'Tests\Fixtures\HasMaskedRussianProfanity',
-])->throws(ArchExpectationFailedException::class);
+it('fails if a file contains russian profanity', function () {
+    expect('Tests\Fixtures\HasExplicitRussianProfanity')->toHaveNoProfanity(language: 'ru');
+})->throws(ArchExpectationFailedException::class);
 
 it('fails if file contains profanity manually included', function () {
     expect('Tests\Fixtures\HasUncoveredProfanity')

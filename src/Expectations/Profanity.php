@@ -47,18 +47,19 @@ expect()->extend('toHaveNoProfanity', fn (array $excluding = [], array $includin
 
         $fileContents = (string) file_get_contents($object->path);
 
-        $foundWords = array_filter($words, function (string $word) use ($fileContents): bool {
+        $russian = new Russian;
+
+        $foundWords = array_filter($words, function (string $word) use ($fileContents, $russian): bool {
             if (preg_match('/\b'.preg_quote($word, '/').'\b/i', $fileContents)) {
                 return true;
             }
 
-            if (Russian::is($word)) {
-                $normalized = Russian::normalize($fileContents);
-
-                return str_contains($normalized, $word);
+            if ($russian->is($word)) {
+                $fileContents = Russian::normalize($fileContents);
+                preg_match_all('/[А-Яа-яЁё]+/u', $fileContents, $matches);
+            } else {
+                preg_match_all('/[a-zA-Z]\w*/', $fileContents, $matches);
             }
-
-            preg_match_all('/[a-zA-Z]\w*/', $fileContents, $matches);
 
             foreach ($matches[0] as $token) {
                 $snakeParts = explode('_', $token);
@@ -84,6 +85,10 @@ expect()->extend('toHaveNoProfanity', fn (array $excluding = [], array $includin
 
             return false;
         });
+
+        if ($russian->isDetected()) {
+            $foundWords = Russian::backToOrigin($foundWords);
+        }
 
         return $foundWords === [];
     },

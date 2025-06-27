@@ -6,22 +6,53 @@ namespace JonPurvis\Profanify\Support;
 
 final class Russian
 {
-    public static function is(string $text): bool
+    private bool $detected = false;
+
+    /** @var array<string, string> */
+    private static array $normalized = [];
+
+    /** @var array<int|string, string> */
+    private static array $toNormalize = [
+        '0' => 'о', '3' => 'з', '4' => 'ч', '6' => 'б',
+        'a' => 'а', 'c' => 'с', 'e' => 'е', 'o' => 'о', 'p' => 'р', 'x' => 'х', 'k' => 'к',
+        'A' => 'д', 'r' => 'г', 'H' => 'н', 'M' => 'м', 'T' => 'т', 'B' => 'в',
+    ];
+
+    public function is(string $text): bool
     {
-        return (bool) preg_match('/[А-Яа-яЁё]/u', $text);
+        if ((bool) preg_match('/[А-Яа-яЁё]/u', $text)) {
+            $this->detected = true;
+        }
+
+        return $this->detected;
+    }
+
+    public function isDetected(): bool
+    {
+        return $this->detected;
     }
 
     public static function normalize(string $text): string
     {
-        $text = mb_strtolower(str_replace('ё', 'е', $text), 'UTF-8');
+        preg_match_all('/\w+/u', $text, $words);
+        $toNormalizeKeysString = implode('', array_keys(self::$toNormalize));
 
-        $text = strtr($text, [
-            '@' => 'а', '0' => 'о', '1' => 'и', '3' => 'з', '4' => 'ч', '6' => 'б',
-            'a' => 'а', 'c' => 'с', 'e' => 'е', 'o' => 'о', 'p' => 'р', 'x' => 'х', 'y' => 'й', 'k' => 'к',
-            'b' => 'б', 'd' => 'д', 'g' => 'г', 'h' => 'н', 'm' => 'м', 't' => 'т', 'v' => 'в', 'i' => 'и',
-            '|' => 'л', '!' => 'и', '_' => '', '-' => '', '*' => '', '.' => '', ',' => '',
-        ]);
+        foreach ($words[0] as $word) {
+            if (strpbrk($word, $toNormalizeKeysString)) {
+                $normalized = strtr($word, self::$toNormalize);
+                self::$normalized[$word] = $normalized;
+            }
+        }
 
-        return preg_replace('/[^а-я]+/u', '', $text) ?: '';
+        return str_replace(array_keys(self::$normalized), array_values(self::$normalized), $text);
+    }
+
+    /**
+     * @param  array<string>  $profanities
+     * @return array<string>
+     */
+    public static function backToOrigin(array $profanities): array
+    {
+        return array_map(fn ($profanity): string => array_search($profanity, self::$normalized) ?: $profanity, $profanities);
     }
 }
