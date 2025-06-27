@@ -7,6 +7,7 @@ namespace JonPurvis\Profanify\Support;
 final class Russian
 {
     private static string $pattern = '/[А-Яа-яЁё]+/u';
+
     private bool $detected = false;
 
     /** @var array<string, string> */
