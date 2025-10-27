@@ -97,6 +97,8 @@ return [
     'reetkever',
     'reetlikker',
     'retard',
+    'schijt',
+    'schijtzooi',
     'sh1t',
     'shit',
     'shit hoofd',
