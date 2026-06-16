@@ -22,7 +22,7 @@
         }
     },
     "require-dev": {
-        "faissaloux/pest-plugin-inside": "^1.9",
+        "faissaloux/pest-plugin-inside": "^1.11",
         "pestphp/pest": "^5.0.0",
         "pestphp/pest-dev-tools": "^5.0.0"
     },
