@@ -15,7 +15,7 @@ final class Analyser
      * Analyse the code for profanity.
      *
      * @param  array<int, string>  $files
-     * @param  \Closure(\Pest\Profanity\Result): void  $callback
+     * @param  Closure(Result): void  $callback
      * @param  array<string>  $excludingWords
      * @param  array<string>  $includingWords
      * @param  array<string>|null  $languages
