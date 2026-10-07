@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pest\Profanity\Support;
 
+use PHPUnit\Event\Facade;
 use PHPUnit\TextUI\CliArguments\Builder;
 use PHPUnit\TextUI\CliArguments\XmlConfigurationFileFinder;
 use PHPUnit\TextUI\Configuration\FilterDirectory;
@@ -22,12 +23,12 @@ final class ConfigurationSourceDetector
      */
     public static function detect(): array
     {
-        $cliConfiguration = (new Builder)->fromParameters([]);
+        $cliConfiguration = new Builder(Facade::emitter())->fromParameters([]);
         $configurationFile = (new XmlConfigurationFileFinder)->find($cliConfiguration);
         $xmlConfiguration = DefaultConfiguration::create();
 
         if (is_string($configurationFile)) {
-            $xmlConfiguration = (new Loader)->load($configurationFile);
+            $xmlConfiguration = new Loader(Facade::emitter())->load($configurationFile);
         }
 
         return array_map(
