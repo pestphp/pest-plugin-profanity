@@ -27,7 +27,7 @@ jobs:
 
     - name: Install Dependencies
       env:
-        COMPOSER_ROOT_VERSION: 4.x-dev
+        COMPOSER_ROOT_VERSION: 5.x-dev
       run: composer update --prefer-stable --no-interaction --no-progress --ansi
 
     - name: Style
