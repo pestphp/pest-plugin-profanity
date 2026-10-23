@@ -140,7 +140,7 @@ class Plugin implements HandlesOriginalArguments
         Analyser::analyse(
             array_keys(iterator_to_array($files)),
             function (Result $result) use (&$filesWithProfanity, &$totalProfanities): void {
-                $path = str_replace(TestSuite::getInstance()->rootPath.'/', '', $result->file);
+                $path = $this->relativePathFromRoot($result->file);
                 $errors = $result->errors;
 
                 if (empty($errors)) {
@@ -197,5 +197,18 @@ class Plugin implements HandlesOriginalArguments
     public function exit(int $code): never
     {
         exit($code);
+    }
+
+    private function relativePathFromRoot(string $file): string
+    {
+        $root = str_replace('\\', '/', TestSuite::getInstance()->rootPath);
+        $file = str_replace('\\', '/', $file);
+        $root = rtrim($root, '/').'/';
+
+        if (str_starts_with($file, $root)) {
+            return substr($file, strlen($root));
+        }
+
+        return $file;
     }
 }
