@@ -159,18 +159,12 @@ test('json output', function () {
             'format' => 'pest',
             'result' => [
                 [
-                    'file' => 'tests/Fixtures/Properties.php',
-                    'profanity' => [
-                        'pr12(bollocks)',
-                    ],
-                ],
-                [
                     'file' => 'tests/Fixtures/All.php',
                     'profanity' => [
-                        'pr9(shit)',
-                        'pr11(shit)',
-                        'pr13(shit)',
-                        'pr15(shit)',
+                        'pr12(shit)',
+                        'pr14(shit)',
+                        'pr16(shit)',
+                        'pr18(shit)',
                     ],
                 ],
                 [
@@ -186,10 +180,15 @@ test('json output', function () {
                     ],
                 ],
                 [
+                    'file' => 'tests/Fixtures/HasProfanityInAttributeAsArrayKeySnakeCase.php',
+                    'profanity' => [
+                        'pr9(shit)',
+                    ],
+                ],
+                [
                     'file' => 'tests/Fixtures/Language.php',
                     'profanity' => [
-                        'pr7(møgso)',
-                        'pr8(bollocks)',
+                        'pr13(bollocks)',
                     ],
                 ],
                 [
@@ -198,8 +197,14 @@ test('json output', function () {
                         'pr12(nobhead)',
                     ],
                 ],
+                [
+                    'file' => 'tests/Fixtures/Properties.php',
+                    'profanity' => [
+                        'pr12(bollocks)',
+                    ],
+                ],
             ],
         ]);
 
     unlink(__DIR__.'/../test.json');
-})->todo();
+});

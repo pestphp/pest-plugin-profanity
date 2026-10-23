@@ -39,6 +39,8 @@ final class JsonLogger implements Logger
      */
     public function output(): void
     {
+        usort($this->logs, fn (array $a, array $b): int => strcmp($a['file'], $b['file']));
+
         $json = json_encode([
             'format' => 'pest',
             'result' => $this->logs,
